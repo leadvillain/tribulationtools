@@ -22,27 +22,37 @@
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             text-align: center;
+            /* Adjust width to accommodate two grids */
+            max-width: 900px;
         }
 
-        /* Essential for formatting the grid */
-        #output {
+        /* The Flexbox Wrapper for side-by-side display */
+        .grid-wrapper {
+            display: flex;
+            flex-wrap: wrap; /* Stacks vertically on very small screens */
+            gap: 20px;
+            justify-content: center;
             margin-top: 2rem;
+        }
+
+        .output-box {
+            flex: 1; /* Allows boxes to grow equally */
+            min-width: 300px; /* Prevents them from getting too squished */
             padding: 1.5rem;
             background-color: #1a202c;
             border: 1px solid #4a5568;
             border-radius: 8px;
             font-family: 'Courier New', monospace;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             line-height: 1.8;
             color: #63b3ed;
-            /* This ensures the \n characters in JS create new lines */
             white-space: pre-wrap;
             letter-spacing: 1px;
             text-align: left;
         }
 
         button {
-            background-color: #3182ce;
+            background-color: #38a169;
             color: white;
             border: none;
             padding: 1rem 2rem;
@@ -54,17 +64,21 @@
         }
 
         button:hover {
-            background-color: #4299e1;
-            box-shadow: 0 0 15px rgba(66, 153, 225, 0.4);
+            background-color: #48bb78;
+            box-shadow: 0 0 15px rgba(72, 187, 120, 0.4);
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>OTP Generator</h2>
-        <button id="generateBtn">Generate</button>
-        <div id="output">Prepare to copy</div>
+        <h2>His and Hers</h2>
+        <button id="generateBtn">Generate OTP pair</button>
+
+        <div class="grid-wrapper">
+            <div id="outputLeft" class="output-box">His...</div>
+            <div id="outputRight" class="output-box">Hers...</div>
+        </div>
     </div>
 
     <script>
@@ -72,17 +86,14 @@
 
         function generateFormattedGrid() {
             let finalOutput = "";
-            const totalCharsNeeded = 5 * 5 * 5; // 125 total characters
+            const totalCharsNeeded = 125; // 5 lines * 5 sets * 5 chars
             const randomValues = new Uint32Array(totalCharsNeeded);
 
-            // Get all random entropy at once for efficiency
             window.crypto.getRandomValues(randomValues);
 
             let valIndex = 0;
-
             for (let line = 0; line < 5; line++) {
                 let currentLine = [];
-
                 for (let set = 0; set < 5; set++) {
                     let currentSet = "";
                     for (let char = 0; char < 5; char++) {
@@ -91,19 +102,26 @@
                     }
                     currentLine.push(currentSet);
                 }
-
-                // Join sets with a space and add a newline at the end of the line
                 finalOutput += currentLine.join(" ") + "\n";
             }
-
             return finalOutput.trim();
         }
 
         const button = document.getElementById('generateBtn');
-        const display = document.getElementById('output');
+        const displayL = document.getElementById('outputLeft');
+        const displayR = document.getElementById('outputRight');
 
         button.addEventListener('click', () => {
-            display.textContent = generateFormattedGrid();
+            /* Option 1: To show two DIFFERENT random grids:
+            displayL.textContent = generateFormattedGrid();
+            displayR.textContent = generateFormattedGrid();
+
+            Option 2: If you want them to be EXACT duplicates of each other,
+               uncomment the lines below and comment out the lines above:
+              */
+               const result = generateFormattedGrid();
+               displayL.textContent = result;
+               displayR.textContent = result;
         });
     </script>
 
