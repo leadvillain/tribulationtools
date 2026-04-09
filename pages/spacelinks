@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dope Space Links</title>
+  <style>
+    body {
+      background-color: black;
+      color: limegreen;
+    }
+  </style>
+</head>
+<body>
+  <h1>Space Links</h1>
+  <pre>
+Kinda boring website with the raw orbital data of everything this side of the moon: https://www.space-track.org/auth/login
+Interesting visualizer using the data from the boring website above: https://whatsin.space
+5-minutely updates from US Geostationary weather satellites: https://weather.cod.edu/satrad/?parms=continental-conus-02-24-0-100-1&checked=map&colorbar=undefined
+Daily updates of nightime light emissions using polar LEO sats: https://www.ncei.noaa.gov/maps/VIIRS_DNB_nighttime_imagery/
+Ground track visualizer of cool satellites you can listen to with a HAM radio: https://www.n2yo.com
+</pre>
+</body>
+</html>
