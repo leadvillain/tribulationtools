@@ -11,9 +11,14 @@
 <body>
 
     <h1>Morse</h1>
+    <!-- 1. Create HTML input fields instead of using Python's input() -->
+        <input type="text" id="user-name" placeholder="Enter your text">
+        <button id="submit-btn" py-click="greet_user">Submit</button>
 
+        <!-- 2. This is where we will display the output -->
+        <div id="output-box"></div>
     <!-- Your Python code goes here -->
-    <script type="py" worker terminal>
+    <script type="py">
     import os
     import sys
     import time
@@ -115,14 +120,20 @@
             time.sleep(0.5)
             cleanup()
 
-    if __name__ == "__main__":
         # Get text from user
-        user_input = input("Enter the text to convert to Morse code: ")
-        if user_input.strip():
-            text_to_morse_audio(user_input)
-        else:
-            print("Nothing to convert!")
+        user_input = document.querySelector("#user-name")
+        user_text = user_input.value
+            def greet_user(event):
+            if user_text.strip():
+                text_to_morse_audio(user_input)
+            else:
+                print("Nothing to convert!")
+                # Read the value from the HTML input box
 
+                        
+                        # Find the output box and display the result
+                        output_div = document.querySelector("#output-box")
+                        output_div.innerText = f"Hello, {user_name}! Nice to meet you."
     </script>
 
 </body>
