@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Python Page</title>
+    <!-- Load PyScript assets -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+</head>
+<body>
+
+    <h1>Morse</h1>
+
+    <!-- Your Python code goes here -->
+    <script type="py">
+    import os
+    import sys
+    import time
+    import wave
+    import struct
+    import math
+
+    # Morse Code Dictionary
+    MORSE_DICT = {
+        'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+        'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+        'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+        'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+        'Y': '-.--', 'Z': '--..', '1': '.----', '2': '..---', '3': '...--',
+        '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..',
+        '9': '----.', '0': '-----', ',': '--..--', '.': '.-.-.-', '?': '..--..',
+        '/': '-..-.', '-': '-....-', '(': '-.--.', ')': '-.--.-', ' ': ' '
+    }
+
+    # Timing settings (Standard Morse timing)
+    UNIT_TIME = 0.03  # Duration of a single dot in seconds (adjust for speed)
+    FREQUENCY = 800   # Pitch of the beep in Hz
+
+    DOT_DURATION = UNIT_TIME
+    DASH_DURATION = UNIT_TIME * 3
+    INTRA_CHARACTER_GAP = UNIT_TIME
+    LETTER_GAP = UNIT_TIME * 3
+    WORD_GAP = UNIT_TIME * 7
+
+    # Filenames for temporary audio files
+    DOT_FILE = "dot.wav"
+    DASH_FILE = "dash.wav"
+
+    def generate_beep_wav(filename, frequency, duration_sec):
+        """Generates a pure sine wave WAV file."""
+        sample_rate = 44100
+        num_samples = int(sample_rate * duration_sec)
+
+        with wave.open(filename, 'w') as wav_file:
+            # Channels: 1 (mono), Sample Width: 2 bytes (16-bit), Framerate, Num Frames, Compression
+            wav_file.setparams((1, 2, sample_rate, num_samples, 'NONE', 'not compressed'))
+            for i in range(num_samples):
+                # Generate sine wave sample
+                value = int(32767 * math.sin(2 * math.pi * frequency * i / sample_rate))
+                wav_file.writeframes(struct.pack('<h', value))
+
+    def play_sound(filename):
+        """Plays a WAV file using platform-native tools."""
+        if sys.platform == "win32":
+            import winsound
+            winsound.PlaySound(filename, winsound.SND_FILENAME)
+        elif sys.platform == "darwin":  # macOS
+            os.system(f"afplay {filename} &")
+        else:  # Linux / Unix
+            os.system(f"aplay -q {filename} &")
+
+    def cleanup():
+        """Removes temporary wav files."""
+        for file in [DOT_FILE, DASH_FILE]:
+            if os.path.exists(file):
+                try:
+                    os.remove(file)
+                except OSError:
+                    pass
+
+    def text_to_morse_audio(text):
+        text = text.upper()
+        print(f"\nEncoding: '{text}'")
+
+        # Generate the beep audio files dynamically
+        generate_beep_wav(DOT_FILE, FREQUENCY, DOT_DURATION)
+        generate_beep_wav(DASH_FILE, FREQUENCY, DASH_DURATION)
+
+        try:
+            for char in text:
+                if char == ' ':
+                    print(" / ", end="", flush=True)
+                    time.sleep(WORD_GAP)
+                    continue
+
+                if char not in MORSE_DICT:
+                    continue  # Skip unsupported characters
+
+                code = MORSE_DICT[char]
+                print(f"{char}[{code}] ", end="", flush=True)
+
+                for symbol in code:
+                    if symbol == '.':
+                        play_sound(DOT_FILE)
+                        time.sleep(DOT_DURATION + INTRA_CHARACTER_GAP)
+                    elif symbol == '-':
+                        play_sound(DASH_FILE)
+                        time.sleep(DASH_DURATION + INTRA_CHARACTER_GAP)
+
+                time.sleep(LETTER_GAP - INTRA_CHARACTER_GAP)
+            print("\n\nTransmission complete!")
+        finally:
+            # Give OS a moment to release file handles before deleting
+            time.sleep(0.5)
+            cleanup()
+
+    if __name__ == "__main__":
+        # Get text from user
+        user_input = input("Enter the text to convert to Morse code: ")
+        if user_input.strip():
+            text_to_morse_audio(user_input)
+        else:
+            print("Nothing to convert!")
+
+    </script>
+
+</body>
+</html>
